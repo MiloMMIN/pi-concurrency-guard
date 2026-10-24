@@ -1,4 +1,4 @@
-# pi-hang-guard
+# pi-concurrency-guard
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Platform: Windows / macOS / Linux](https://img.shields.io/badge/platform-Windows%20%7C%20macOS%20%7C%20Linux-brightgreen.svg)]()
@@ -68,13 +68,13 @@
 直接通过 Git 源一键纳管到 Pi 设置中：
 
 ```bash
-pi install git:github.com/MiloMMIN/pi-hang-guard
+pi install git:github.com/MiloMMIN/pi-concurrency-guard
 ```
 
 或者使用一次性加载测试：
 
 ```bash
-pi -e git:github.com/MiloMMIN/pi-hang-guard
+pi -e git:github.com/MiloMMIN/pi-concurrency-guard
 ```
 
 ### 方式二：手动开发与本地链接
@@ -83,14 +83,14 @@ pi -e git:github.com/MiloMMIN/pi-hang-guard
 
 ```bash
 # 1. 克隆并编译
-cd D:/Desktop/share/script/
-git clone https://github.com/MiloMMIN/pi-hang-guard.git
-cd pi-hang-guard
+cd ~/projects/
+git clone https://github.com/MiloMMIN/pi-concurrency-guard.git
+cd pi-concurrency-guard
 pnpm install
 pnpm build
 
 # 2. 建立 Junction 软链接到 Pi 扩展目录
-powershell -Command "New-Item -ItemType Junction -Path \"$env:USERPROFILE\.pi\agent\extensions\pi-hang-guard\" -Target \"$PWD\dist\""
+powershell -Command "New-Item -ItemType Junction -Path \"$env:USERPROFILE\.pi\agent\extensions\pi-concurrency-guard\" -Target \"$PWD\dist\""
 ```
 ### 方式三：手动运行守护进程测试
 

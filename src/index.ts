@@ -92,7 +92,7 @@ function ensureDaemonRunning(): void {
           registerSelf();
         }, 600);
       } catch (err) {
-        console.error('[Pi Hang Guard] Failed to spawn watchdog daemon:', err);
+        console.error('[Pi Concurrency Guard] Failed to spawn watchdog daemon:', err);
       }
     } else {
       registerSelf();
@@ -177,47 +177,54 @@ export default function (pi: ExtensionAPI) {
   });
 
   // 5. 注册 /hang 命令，查看所有并发 Pi 的健康状态
+  const statusHandler = async (_args: any, ctx: any) => {
+    const status = await fetchStatus();
+    if (!status) {
+      ctx.ui.notify('看门狗守护进程未运行或已自动休眠退出', 'warning');
+      return;
+    }
+
+    const lines: string[] = [];
+    lines.push(`🔍 Pi Concurrency Guard 状态报告 (Watchdog PID: ${status.watchdogPid}, 运行 ${status.uptimeSeconds}s)`);
+    lines.push(`并发活跃实例数: ${status.instances.length}`);
+    lines.push('----------------------------------------------------');
+
+    const now = Date.now();
+    for (const inst of status.instances) {
+      const isSelf = inst.pid === process.pid;
+      const prefix = isSelf ? '👉 [当前]' : '   ';
+      const folder = path.basename(inst.cwd || 'root');
+      const activeSec = Math.floor((now - inst.lastHeartbeat) / 1000);
+      let health = '🟢 正常';
+
+      if (inst.status === 'running' && inst.toolStartTime) {
+        const runMins = Math.floor((now - inst.toolStartTime) / 60000);
+        if (runMins >= 10) {
+          health = `🔴 卡滞警告 (${runMins}m)`;
+        } else {
+          health = `🟡 运行中 (${runMins}m)`;
+        }
+      }
+
+      lines.push(
+        `${prefix} PID ${inst.pid} | 目录: ${folder} | 状态: ${inst.status} | 健康: ${health} | 心跳: ${activeSec}s 前`
+      );
+      if (inst.currentTool) {
+        lines.push(`      正在执行: [${inst.currentTool}] ${inst.currentCommand || ''}`);
+      }
+    }
+    lines.push('----------------------------------------------------');
+
+    ctx.ui.notify(lines.join('\n'), 'info');
+  };
+
   pi.registerCommand('hang', {
+    description: '查看所有并发运行中的 Pi 实例状态与卡滞检测 (同 /guard)',
+    handler: statusHandler,
+  });
+
+  pi.registerCommand('guard', {
     description: '查看所有并发运行中的 Pi 实例状态与卡滞检测',
-    async handler(_args, ctx) {
-      const status = await fetchStatus();
-      if (!status) {
-        ctx.ui.notify('看门狗守护进程未运行或已自动休眠退出', 'warning');
-        return;
-      }
-
-      const lines: string[] = [];
-      lines.push(`🔍 Pi Hang Guard 状态报告 (Watchdog PID: ${status.watchdogPid}, 运行 ${status.uptimeSeconds}s)`);
-      lines.push(`并发活跃实例数: ${status.instances.length}`);
-      lines.push('----------------------------------------------------');
-
-      const now = Date.now();
-      for (const inst of status.instances) {
-        const isSelf = inst.pid === process.pid;
-        const prefix = isSelf ? '👉 [当前]' : '   ';
-        const folder = path.basename(inst.cwd || 'root');
-        const activeSec = Math.floor((now - inst.lastHeartbeat) / 1000);
-        let health = '🟢 正常';
-
-        if (inst.status === 'running' && inst.toolStartTime) {
-          const runMins = Math.floor((now - inst.toolStartTime) / 60000);
-          if (runMins >= 10) {
-            health = `🔴 卡滞警告 (${runMins}m)`;
-          } else {
-            health = `🟡 运行中 (${runMins}m)`;
-          }
-        }
-
-        lines.push(
-          `${prefix} PID ${inst.pid} | 目录: ${folder} | 状态: ${inst.status} | 健康: ${health} | 心跳: ${activeSec}s 前`
-        );
-        if (inst.currentTool) {
-          lines.push(`      正在执行: [${inst.currentTool}] ${inst.currentCommand || ''}`);
-        }
-      }
-      lines.push('----------------------------------------------------');
-
-      ctx.ui.notify(lines.join('\n'), 'info');
-    },
+    handler: statusHandler,
   });
 }

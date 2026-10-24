@@ -1,7 +1,7 @@
 {
-  "name": "pi-hang-guard",
+  "name": "pi-concurrency-guard",
   "version": "1.0.0",
-  "description": "Zero-residue concurrency hang watchdog & anti-hang extension for Pi Coding Agent",
+  "description": "Zero-residue multi-agent concurrency hang watchdog & safe guard for Pi Coding Agent",
   "main": "dist/index.js",
   "type": "module",
   "scripts": {
@@ -15,6 +15,7 @@
     "extension",
     "concurrency",
     "watchdog",
+    "concurrency-guard",
     "hang-guard"
   ],
   "pi": {

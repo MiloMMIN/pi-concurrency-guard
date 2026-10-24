@@ -10,7 +10,7 @@ export const HANG_THRESHOLD_MS = 10 * 60 * 1000; // 10 minutes
 export const CHECK_INTERVAL_MS = 20 * 1000; // 20 seconds
 const GRACE_PERIOD_CHECKS = 2; // Empty instances grace checks before self-exit
 
-class HangGuardDaemon {
+class ConcurrencyGuardDaemon {
   private instances = new Map<number, InstanceRecord>();
   private emptyChecks = 0;
   private server: http.Server | null = null;
@@ -72,13 +72,13 @@ class HangGuardDaemon {
         // Another instance is already running as singleton watchdog
         process.exit(0);
       } else {
-        console.error('[Pi Hang Guard] Server error:', err);
+        console.error('[Pi Concurrency Guard] Server error:', err);
         process.exit(1);
       }
     });
 
     this.server.listen(port, '127.0.0.1', () => {
-      console.log(`[Pi Hang Guard] Daemon started on 127.0.0.1:${port} (PID: ${process.pid})`);
+      console.log(`[Pi Concurrency Guard] Daemon started on 127.0.0.1:${port} (PID: ${process.pid})`);
       this.checkTimer = setInterval(() => this.runCheck(), CHECK_INTERVAL_MS);
     });
   }
@@ -161,7 +161,7 @@ class HangGuardDaemon {
           const title = `⚠️ Pi 卡滞警报 [PID: ${record.pid}]`;
           const message = `项目 [${folderName}]: ${reason}，请及时检查！`;
           
-          console.warn(`[Pi Hang Guard] ALERT: ${title} - ${message}`);
+          console.warn(`[Pi Concurrency Guard] ALERT: ${title} - ${message}`);
           sendAlertNotification(title, message);
         }
       }
@@ -171,7 +171,7 @@ class HangGuardDaemon {
     if (this.instances.size === 0) {
       this.emptyChecks++;
       if (this.emptyChecks >= GRACE_PERIOD_CHECKS) {
-        console.log('[Pi Hang Guard] No active Pi instances detected. Auto-terminating daemon gracefully.');
+        console.log('[Pi Concurrency Guard] No active Pi instances detected. Auto-terminating daemon gracefully.');
         if (this.checkTimer) clearInterval(this.checkTimer);
         this.server?.close(() => {
           process.exit(0);
@@ -185,8 +185,8 @@ class HangGuardDaemon {
 
 // Start if executed directly
 if (import.meta.url === `file://${process.argv[1]?.replace(/\\/g, '/')}` || process.argv.includes('--daemon')) {
-  const daemon = new HangGuardDaemon();
+  const daemon = new ConcurrencyGuardDaemon();
   daemon.start();
 }
 
-export { HangGuardDaemon };
+export { ConcurrencyGuardDaemon };

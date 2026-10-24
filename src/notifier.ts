@@ -27,7 +27,7 @@ export function sendAlertNotification(title: string, message: string): void {
         $doc = [Windows.Data.Xml.Dom.XmlDocument, Windows.Data.Xml.Dom.XmlCommands, ContentType = WindowsRuntime]::new()
         $doc.LoadXml($xml)
         $toast = [Windows.UI.Notifications.ToastNotification, Windows.UI.Notifications, ContentType = WindowsRuntime]::new($doc)
-        [Windows.UI.Notifications.ToastNotificationManager, Windows.UI.Notifications, ContentType = WindowsRuntime]::CreateToastNotifier("Pi Hang Guard").Show($toast)
+        [Windows.UI.Notifications.ToastNotificationManager, Windows.UI.Notifications, ContentType = WindowsRuntime]::CreateToastNotifier("Pi Concurrency Guard").Show($toast)
       } catch {}
     `.trim();
 
