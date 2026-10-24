@@ -63,24 +63,36 @@
 
 ## 🚀 安装与使用 (Installation)
 
-### 方式一：直接安装为 Pi 扩展（推荐）
+### 方式一：使用 Pi 官方包管理器一键安装（推荐）
 
-可以通过 Pi 的扩展机制直接引入：
+直接通过 Git 源一键纳管到 Pi 设置中：
 
 ```bash
-# 进入你个人 Pi 扩展目录
-cd ~/.pi/agent/extensions
-
-# 克隆本仓库并编译
-git clone https://github.com/MiloMMIN/pi-hang-guard.git
-cd pi-hang-guard
-npm install
-npm run build
+pi install git:github.com/MiloMMIN/pi-hang-guard
 ```
 
-或将编译后的产物复制到扩展目录即可使用。
+或者使用一次性加载测试：
 
-### 方式二：手动测试运行守护进程
+```bash
+pi -e git:github.com/MiloMMIN/pi-hang-guard
+```
+
+### 方式二：手动开发与本地链接
+
+如果你想本地修改代码并实时热更新：
+
+```bash
+# 1. 克隆并编译
+cd D:/Desktop/share/script/
+git clone https://github.com/MiloMMIN/pi-hang-guard.git
+cd pi-hang-guard
+pnpm install
+pnpm build
+
+# 2. 建立 Junction 软链接到 Pi 扩展目录
+powershell -Command "New-Item -ItemType Junction -Path \"$env:USERPROFILE\.pi\agent\extensions\pi-hang-guard\" -Target \"$PWD\dist\""
+```
+### 方式三：手动运行守护进程测试
 
 ```bash
 node dist/daemon.js

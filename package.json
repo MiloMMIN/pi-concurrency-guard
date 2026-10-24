@@ -9,6 +9,7 @@
     "prepublishOnly": "npm run build"
   },
   "keywords": [
+    "pi-package",
     "pi",
     "pi-coding-agent",
     "extension",
@@ -16,8 +17,21 @@
     "watchdog",
     "hang-guard"
   ],
+  "pi": {
+    "extensions": [
+      "./dist/index.js"
+    ]
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
   "author": "MiloMMIN",
   "license": "MIT",
+  "peerDependencies": {
+    "@earendil-works/pi-coding-agent": "*"
+  },
   "devDependencies": {
     "@earendil-works/pi-coding-agent": "latest",
     "@types/node": "^22.0.0",
