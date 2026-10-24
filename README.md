@@ -65,16 +65,20 @@
 
 ### 方式一：使用 Pi 官方包管理器一键安装（推荐）
 
-直接通过 Git 源一键纳管到 Pi 设置中：
+直接通过 npm 或 Git 源纳管到 Pi 设置中：
 
 ```bash
+# 从 npm 官方源安装（推荐）
+pi install npm:pi-concurrency-guard
+
+# 或从 GitHub 安装
 pi install git:github.com/MiloMMIN/pi-concurrency-guard
 ```
 
 或者使用一次性加载测试：
 
 ```bash
-pi -e git:github.com/MiloMMIN/pi-concurrency-guard
+pi -e npm:pi-concurrency-guard
 ```
 
 ### 方式二：手动开发与本地链接
