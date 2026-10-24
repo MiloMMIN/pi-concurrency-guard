@@ -93,13 +93,24 @@ cd pi-concurrency-guard
 pnpm install
 pnpm build
 
-# 2. 建立 Junction 软链接到 Pi 扩展目录
-powershell -Command "New-Item -ItemType Junction -Path \"$env:USERPROFILE\.pi\agent\extensions\pi-concurrency-guard\" -Target \"$PWD\dist\""
+# 2. 一键配置本地扩展软链接
+npm run link
+
+# 3. 启动开发模式（修改 src/ 保存即自动热编译并即时生效）
+npm run dev
 ```
-### 方式三：手动运行守护进程测试
+
+### 方式三：一键全渠道发布与同步（本地 ➔ GitHub ➔ npm）
+
+当你修改完功能并验证无误后，只需在项目根目录敲一行命令：
 
 ```bash
-node dist/daemon.js
+# 一键自动完成：编译 ➔ 升版本 ➔ Git 提交 ➔ 打 Tag ➔ 推送 GitHub ➔ 发布 npm
+npm run sync
+
+# 如果需要 minor (次版本) 或 major (大版本)：
+npm run sync:minor
+npm run sync:major
 ```
 
 ---
@@ -108,7 +119,7 @@ node dist/daemon.js
 
 | 命令 | 描述 |
 | :--- | :--- |
-| `/hang` | 在当前 Pi 终端中打印所有并发运行中 Pi 实例的健康列表与卡滞状态 |
+| `/guard` (或 `/hang`) | 在当前 Pi 终端中打印所有并发运行中 Pi 实例的健康列表与卡滞状态 |
 
 ---
 

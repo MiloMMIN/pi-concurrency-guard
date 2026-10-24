@@ -6,6 +6,12 @@
   "type": "module",
   "scripts": {
     "build": "tsc",
+    "dev": "tsc --watch",
+    "typecheck": "tsc --noEmit",
+    "link": "node scripts/setup-link.mjs",
+    "sync": "node scripts/sync.mjs patch",
+    "sync:minor": "node scripts/sync.mjs minor",
+    "sync:major": "node scripts/sync.mjs major",
     "prepublishOnly": "npm run build"
   },
   "keywords": [
